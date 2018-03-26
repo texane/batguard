@@ -1,0 +1,12 @@
+[ power consumption ]
+
+total: 1.3mA @ 12V = 16mW (ldo)
+mcu: 1.4 mA @ 3.3V = 4.62mW
+
+total: 10mA @ 12V = 120mW (traco)
+
+if LDO used, ((15 - 3.3) * 0.002) = 0.0234W
+if DC/DC used, (12 * 0.01) - (0.0014 * 3.3) = 0.11538W
+
+this traco module not made for low power application
+since it drains at least 15mA with no load applied
