@@ -1,18 +1,23 @@
 /* TODOs */
+/* when threshold reached, goto ultra low power mode */
+/* improve adc measure */
 /* add a LED indicator (reuse LED is possible ?) */
-/* unsolder arduino LED */
-/* how to calibrate */
-/* measure current cusumption */
+/* how to calibrate (ie. automatic threshold setting) */
 
 
 #include <stdint.h>
 #include <avr/io.h>
+#include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 #include <util/delay.h>
 #include <util/delay_basic.h>
 
-#define CONFIG_UART
+/* must be defined before uart */
+#define CLK_PRESCAL (256UL)
+/* #define CLK_PRESCAL (1UL) */
+
+/* #define CONFIG_UART */
 #ifdef CONFIG_UART
 #include "./uart.c"
 #endif /* CONFIG_UART */
@@ -114,9 +119,6 @@ static void fet_init(void)
 
 /* core clock prescaler */
 
-/* #define CLK_PRESCAL (256UL) */
-#define CLK_PRESCAL (1UL)
-
 static inline void clk_set_prescal(uint8_t x)
 {
   /* pow2, max 8 = 256 */
@@ -195,10 +197,31 @@ int main(void)
 
 #ifdef CONFIG_UART
   uart_setup();
+#else
+  /* power consumption, disable uart */
+  UCSR0B = 0;
+  PRR |= (1 << 1);
 #endif /* CONFIG_UART */
 
   adc_init();
   fet_init();
+
+  /* power consumption, disable watchdog */
+  wdt_reset();
+  MCUSR &= ~(1 << WDRF);
+  WDTCSR |= (1 << WDCE) | (1 << WDE);
+  WDTCSR = 0x00;
+
+  /* power consumption, disable comparator */
+  ACSR = 1 << 7;
+
+#if (CLK_PRESCAL == 256UL)
+  clk_set_prescal_max();
+#else
+#if (CLK_PRESCAL != 1UL)
+# error "not implemented"
+#endif /* (CLK_PRESCAL != 1UL) */
+#endif /* (CLK_PRESCAL == 256UL) */
 
   set_sleep_mode(SLEEP_MODE_IDLE);
 
