@@ -3,6 +3,7 @@
 /* improve adc measure */
 /* add a LED indicator (reuse LED is possible ?) */
 /* how to calibrate (ie. automatic threshold setting) */
+/* test with router */
 
 
 #include <stdint.h>
@@ -17,7 +18,7 @@
 #define CLK_PRESCAL (256UL)
 /* #define CLK_PRESCAL (1UL) */
 
-/* #define CONFIG_UART */
+#define CONFIG_UART
 #ifdef CONFIG_UART
 #include "./uart.c"
 #endif /* CONFIG_UART */
@@ -25,8 +26,8 @@
 
 /* adc */
 
-#define ADC_R0 14750.0
-#define ADC_R1 926.0
+#define ADC_R0 15000.0
+#define ADC_R1 995.0
 #define ADC_VREF 1.1
 #define ADC_NBITS 1024.0
 #define ADC_VOLT_TO_CODE(__v) \
@@ -50,10 +51,10 @@ static uint16_t adc_read(void)
   /* in practice, resistors are 926 and 14.71K */
   /* if x = 1, Vin = 0.018139V (resolution) */
 
-  /* offset error is around 180mV */
+  /* offset error is around 8mV */
 
 #define ADC_NSUM 4
-#define ADC_OFF 10
+#define ADC_OFF 8
 
   uint8_t i;
   uint16_t x;
