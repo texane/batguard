@@ -10,3 +10,5 @@ if DC/DC used, (12 * 0.01) - (0.0014 * 3.3) = 0.11538W
 
 this traco module not made for low power application
 since it drains at least 15mA with no load applied
+
+ldo used: lp2985-n.pdf
